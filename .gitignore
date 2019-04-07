@@ -1,0 +1,13 @@
+*.pdf
+*.cpp
+*.d
+*.csv
+*.o
+*.svg
+CODA*.txt
+*.jags
+*.bugs
+*-inits*.R
+*-data.R
+Examples/*/tmp
+Manifest.toml

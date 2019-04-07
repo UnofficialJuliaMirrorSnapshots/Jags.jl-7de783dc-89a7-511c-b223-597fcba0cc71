@@ -1,0 +1,22 @@
+language: julia
+
+os:
+  - linux
+  - osx
+  
+julia:
+  - 1.0
+  - 1.1
+  - nightly
+  
+matrix:
+  allow_failures:
+   - julia: nightly
+   - os: osx
+   
+notifications:
+  email: true
+  
+#script:
+#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#  - julia project=@. -e 'using Pkg; Pkg.test("Jags")'
