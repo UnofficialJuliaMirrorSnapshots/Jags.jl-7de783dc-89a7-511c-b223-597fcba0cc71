@@ -55,7 +55,7 @@ For more info on Jags, please go to <http://mcmc-jags.sourceforge.net>.
 
 ### Version 0.1.3
 
-1. Removed upper bound on Julia in REQUIRE. 
+1. Removed upper bound on Julia in REQUIRE.
 
 ### Version 0.1.2
 
@@ -70,7 +70,7 @@ For more info on Jags, please go to <http://mcmc-jags.sourceforge.net>.
 
 The two most important features introduced in version 0.1.0 are:
 
-1. Using Mamba to display and diagnose simulation results. The call to jags() to sample now returns a Mamba Chains object (previously it returned a dictionary). 
+1. Using Mamba to display and diagnose simulation results. The call to jags() to sample now returns a Mamba Chains object (previously it returned a dictionary).
 2. Added the ability to specify RNGs in the initializations file for running simulations in parallel.
 
 ### Version 0.0.4
@@ -86,7 +86,7 @@ The two most important features introduced in version 0.1.0 are:
 
 ## Requirements
 
-This version of the Jags.jl package assumes that: 
+This version of the Jags.jl package assumes that:
 
 1. Jags is installed and the jags binary is on $PATH. The variable JAGS_HOME is currently initialized either from ~/.juliarc.jl or from an environment variable JAGS_HOME. JAGS_HOME currently only used in runtests.jl to disable attempting to run tests that need the Jags executable on $PATH.
 
@@ -99,7 +99,7 @@ To test and run the examples:
 
 As in the Jags.jl setting, the Jags program consumes and produces files in a 'tmp' subdirectory of the current directory, it is useful to control the current working directory and restore the original directory at the end of the script.
 ```
-using Mamba, Jags
+using Jags
 
 ProjDir = dirname(@__FILE__)
 cd(ProjDir)
@@ -132,7 +132,7 @@ monitors = (String => Bool)[
 The next step is to create and initialize a Jagsmodel:
 ```
 jagsmodel = Jagsmodel(
-  name="line1", 
+  name="line1",
   model=line,
   monitor=monitors,
   #ncommands=1, nchains=4,
@@ -172,47 +172,11 @@ println("\nInput initial values dictionary:")
 inits |> display
 println()
 ```
-Run the mcmc simulation, passing in the model, the data, the initial values and the working directory. If 'inits' is a single dictionary, it needs to be passed in as '[inits]', see the Bones example. 
+Run the mcmc simulation, passing in the model, the data, the initial values and the working directory. If 'inits' is a single dictionary, it needs to be passed in as '[inits]', see the Bones example.
 ```
 sim = jags(jagsmodel, data, inits, ProjDir)
 describe(sim)
 println()
-```
-Below Mamba.jl based tools are available to diagnose and plot the simulation results:
-```
-###### Brooks, Gelman and Rubin Convergence Diagnostic
-try
-  gelmandiag(sim1, mpsrf=true, transform=true) |> display
-catch e
-  #println(e)
-  gelmandiag(sim, mpsrf=false, transform=true) |> display
-end
-
-###### Geweke Convergence Diagnostic
-gewekediag(sim) |> display
-
-###### Highest Posterior Density Intervals
-hpd(sim) |> display
-
-###### Cross-Correlations
-cor(sim) |> display
-
-###### Lag-Autocorrelations
-autocor(sim) |> display
-
-###### Plotting
-p = plot(sim, [:trace, :mean, :density, :autocor], legend=true);
-draw(p, nrow=4, ncol=4, filename="$(jagsmodel.name)-summaryplot", fmt=:svg)
-draw(p, nrow=4, ncol=4, filename="$(jagsmodel.name)-summaryplot", fmt=:pdf)
-
-###### Below will only work on OSX, please adjust for your environment.
-###### JULIA_SVG_BROWSER is set from the environment variable JULIA_SVG_BROWSER
-@static Sys.isapple() ? if length(JULIA_SVG_BROWSER) > 0
-        for i in 1:3
-          isfile("$(jagsmodel.name)-summaryplot-$(i).svg") &&
-            run(`open -a $(JULIA_SVG_BROWSER) "$(jagsmodel.name)-summaryplot-$(i).svg"`)
-        end
-      end : println()
 ```
 ## Running a Jags script, some details
 
@@ -222,15 +186,15 @@ Jagsmodel() is used to define and set up the basic structure to run a simulation
 The full signature of Jagsmodel() is:
 ```
 function Jagsmodel(;
-  name="Noname", 
-  model="", 
+  name="Noname",
+  model="",
   ncommands=1,
   nchains=4,
   adapt=1000,
-  update=10000,
+  nsamples=10000,
   thin=10,
   jagsthin=1,
-  monitor=Dict(), 
+  monitor=Dict(),
   deviance=false,
   dic=false,
   popt=false,
@@ -265,7 +229,7 @@ inits = [
   Dict("alpha" => 5,"beta" => 2,"tau" => 5,".RNG.name" => "base::Mersenne-Twister")
 ]
 ```
-The first entry in the 'inits' array will be passed into the first chain in the first command process, the second entry to the second process, etc. A second chain in the first command would be initialized with the second entry, etc. 
+The first entry in the 'inits' array will be passed into the first chain in the first command process, the second entry to the second process, etc. A second chain in the first command would be initialized with the second entry, etc.
 
 
 ## To do
